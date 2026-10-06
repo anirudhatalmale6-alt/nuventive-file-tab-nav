@@ -25,7 +25,11 @@ ul[id^="menu-main-menu"] {
 	                                 Try 12-16px if you ever want the flared look. */
 	--nv-pad-x:         14px;     /* how far the tab reaches past the label */
 	--nv-inset-top:     16px;     /* white space left above the tab */
-	--nv-drop:          12px;     /* how far the tab sinks below the menu row */
+	--nv-drop:          0px;      /* how far the tab sinks BELOW the menu row.
+	                                 Your header band has no padding under the
+	                                 menu, so the row's bottom edge IS the bottom
+	                                 of the white bar - anything above 0 here
+	                                 hangs over the page content underneath. */
 	--nv-speed:         260ms;    /* fade speed                    */
 	--nv-lift:          none;     /* set to e.g. drop-shadow(0 -2px 5px rgba(9,51,46,.2))
 	                                 if you ever want the tab to cast a shadow */
@@ -45,16 +49,17 @@ ul[id^="menu-main-menu"] {
 
 /* Two housekeeping values on the menu element itself:
 
-   --awb-submenu-space : the dropdown hangs off the bottom of the item, and the
-     item just got taller, so pull the offset in by the same amount. The flyout
-     ends up in exactly the same place it is today.
+   --awb-submenu-space : the gap between the menu row and the dropdown. At 0 the
+     dropdown starts exactly where the tab's foot ends, so the tab opens into it
+     as one piece - which is the point of a folder tab. Set it to 12px if you
+     would rather the dropdown floated below the bar as it used to.
 
    --awb-active-border : Avada turns its 2px "active border" into extra padding
      the moment you hover, which nudges every other label sideways by up to
      1.5px. The tab draws its own edge, so we zero it and that wobble (which is
      there today, before any of this CSS) disappears. */
 nav.awb-menu[aria-label="Main Menu"]:not(.collapse-enabled) {
-	--awb-submenu-space: 12px !important;
+	--awb-submenu-space: 0px !important;
 	--awb-active-border-top: 0px !important;
 	--awb-active-border-right: 0px !important;
 	--awb-active-border-bottom: 0px !important;
@@ -64,7 +69,7 @@ nav.awb-menu[aria-label="Main Menu"]:not(.collapse-enabled) {
 /* Same thing again, matched on the menu's ID instead of its label, so the
    effect survives if the menu is ever renamed in Avada. */
 .awb-menu:not(.collapse-enabled):has(ul[id^="menu-main-menu"]) {
-	--awb-submenu-space: 12px !important;
+	--awb-submenu-space: 0px !important;
 	--awb-active-border-top: 0px !important;
 	--awb-active-border-right: 0px !important;
 	--awb-active-border-bottom: 0px !important;
@@ -213,6 +218,16 @@ nav.awb-menu[aria-label="Main Menu"]:not(.collapse-enabled) {
 		--nv-drop: 0px;
 		border-radius: var(--nv-radius);
 	}
+}
+
+/* ---- 5c. Sticky header safety net -----------------------------------
+   When you scroll, Avada shrinks the header and adds .fusion-container-stuck.
+   In that state the bar has no room under the menu row at all, so the tab must
+   never reach past it - otherwise its foot hangs over the page content. This
+   pins the drop to zero while stuck, no matter what --nv-drop is set to. */
+.fusion-container-stuck .awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li > .awb-menu__main-background-active {
+	--nv-drop: 0px;
+	bottom: 0;
 }
 
 /* ---- 6. Respect "reduce motion" ------------------------------------- */

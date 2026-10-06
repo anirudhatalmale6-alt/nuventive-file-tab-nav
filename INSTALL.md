@@ -47,7 +47,8 @@ need to touch the rules underneath.
 --nv-flare:         0px;      /* 0 = straight sides (manila folder). 12-16px = flared feet */
 --nv-pad-x:         14px;     /* how far the tab reaches past the label */
 --nv-inset-top:     16px;     /* white space left above the tab */
---nv-drop:          12px;     /* how far the tab sinks below the menu row */
+--nv-drop:          0px;      /* how far the tab sinks BELOW the menu row - keep at 0
+                                 unless your header gains padding under the menu */
 --nv-speed:         260ms;    /* fade speed */
 --nv-lift:          none;     /* drop-shadow(...) if you want the tab to cast a shadow */
 ```
@@ -56,6 +57,8 @@ A few examples:
 
 * **Narrower / wider tab** → `--nv-pad-x: 10px;` / `--nv-pad-x: 24px;`
 * **Shorter / taller tab** → raise or lower `--nv-inset-top`
+* **Dropdown floating below the bar instead of meeting the tab** →
+  change `--awb-submenu-space` in section 2 from `0px` to `12px`
 * **Flared "feet" instead of straight sides** → `--nv-flare: 16px;`
 * **No fade, instant** → `--nv-speed: 0ms;`
 * **Give the tab a shadow** → `--nv-lift: drop-shadow(0 -2px 5px rgba(9,51,46,.2));`
@@ -153,6 +156,26 @@ the mouse touched the menu. Section 8 out-specifies it, so this file behaves
 correctly either way, but **the clean fix is to delete that child-theme block**
 so only one implementation is live. Two sets of rules fighting over the same
 element will cause confusing results the next time either is changed.
+
+---
+
+# The tab must never reach past the header bar
+
+`--nv-drop` is how far the tab's foot extends below the menu row. Your header
+band has **no padding under the menu row**, so the row's bottom edge already *is*
+the bottom of the white bar — any drop above `0` hangs over the page content
+underneath. That is what section 5c guards:
+
+```css
+.fusion-container-stuck ... { --nv-drop: 0px; bottom: 0; }
+```
+
+Avada adds `.fusion-container-stuck` to the header when you scroll and it
+shrinks. The rule pins the drop to zero while stuck no matter what the dial says,
+so the scrolled header can never overhang even if `--nv-drop` is raised later.
+
+Measured on `/solutions/` and `/contact/`, at the top of the page and scrolled:
+tab foot and header bottom edge on the same pixel, overhang 0 in all four cases.
 
 ---
 
