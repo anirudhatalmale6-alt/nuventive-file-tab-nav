@@ -83,8 +83,11 @@ body{margin:0;font-family:Roboto,Arial,sans-serif;color:#09332E;background:#fff}
 ul[id^="menu-main-menu"] {
 	--nv-hover-bg:      #09332E;  /* tab fill on hover            */
 	--nv-hover-text:    #FFFFFF;  /* label colour on hover        */
-	--nv-current-bg:    #CFD200;  /* tab fill for the page you are on */
-	--nv-current-text:  #09332E;  /* label colour for that tab    */
+	--nv-current-bg:    #09332E;  /* tab fill for the page you are on */
+	--nv-current-text:  #FFFFFF;  /* label colour for that tab    */
+	/* ^ these two keep the change you made in the Customizer (dark green tab,
+	     white label). For the bright green tab instead:
+	     --nv-current-bg: #CFD200;  --nv-current-text: #09332E; */
 
 	--nv-radius:        9px;      /* roundness of the tab top corners */
 	--nv-flare:         0px;      /* outward "feet" at the foot of the tab.
@@ -292,6 +295,91 @@ nav.awb-menu[aria-label="Main Menu"]:not(.collapse-enabled) {
 /* ---- 7. Mobile / collapsed menu is left exactly as it is ------------
    (Avada hides these background layers below the 1200px breakpoint, and
    every rule above is scoped to :not(.collapse-enabled).) */
+
+
+/* =====================================================================
+   8. CURRENT PAGE ONLY  -  the tab does not follow the mouse
+   ---------------------------------------------------------------------
+   With this block in, the tab appears ONLY on the page you are actually
+   on. Moving the mouse across the menu changes nothing.
+
+   TO GO BACK to the tab following the mouse: delete this whole block
+   (everything below this comment). Nothing above it needs touching.
+   ===================================================================== */
+
+/* Don't paint the tab for an item that isn't the current page */
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:not(.current-menu-item):not(.current-menu-parent):not(.current-menu-ancestor):not(.current_page_item):not(.current-page-ancestor):hover > .awb-menu__main-background-active,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:not(.current-menu-item):not(.current-menu-parent):not(.current-menu-ancestor):not(.current_page_item):not(.current-page-ancestor).hover > .awb-menu__main-background-active,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:not(.current-menu-item):not(.current-menu-parent):not(.current-menu-ancestor):not(.current_page_item):not(.current-page-ancestor).expanded > .awb-menu__main-background-active {
+	opacity: 0;
+}
+
+/* ...and leave its label the colour it already was */
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:not(.current-menu-item):not(.current-menu-parent):not(.current-menu-ancestor):not(.current_page_item):not(.current-page-ancestor):hover > .awb-menu__main-a,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:not(.current-menu-item):not(.current-menu-parent):not(.current-menu-ancestor):not(.current_page_item):not(.current-page-ancestor).hover > .awb-menu__main-a,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:not(.current-menu-item):not(.current-menu-parent):not(.current-menu-ancestor):not(.current_page_item):not(.current-page-ancestor).expanded > .awb-menu__main-a {
+	color: var(--awb-color) !important;
+}
+
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:not(.current-menu-item):not(.current-menu-parent):not(.current-menu-ancestor):not(.current_page_item):not(.current-page-ancestor):hover > .awb-menu__main-a .awb-menu__open-nav-submenu-hover::before,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:not(.current-menu-item):not(.current-menu-parent):not(.current-menu-ancestor):not(.current_page_item):not(.current-page-ancestor).hover > .awb-menu__main-a .awb-menu__open-nav-submenu-hover::before,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:not(.current-menu-item):not(.current-menu-parent):not(.current-menu-ancestor):not(.current_page_item):not(.current-page-ancestor).expanded > .awb-menu__main-a .awb-menu__open-nav-submenu-hover::before {
+	color: var(--awb-icons-color) !important;
+}
+
+/* The current page keeps its tab even when the mouse is over it - hovering
+   the page you are already on must not recolour its own tab. */
+html body .awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.current-menu-item > .awb-menu__main-background-active,
+html body .awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.current-menu-parent > .awb-menu__main-background-active,
+html body .awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.current-menu-ancestor > .awb-menu__main-background-active,
+html body .awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.current_page_item > .awb-menu__main-background-active,
+html body .awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.current-page-ancestor > .awb-menu__main-background-active {
+	--nv-bg: var(--nv-current-bg);
+	opacity: 1;
+}
+
+html body .awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.current-menu-item > .awb-menu__main-a,
+html body .awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.current-menu-parent > .awb-menu__main-a,
+html body .awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.current-menu-ancestor > .awb-menu__main-a,
+html body .awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.current_page_item > .awb-menu__main-a,
+html body .awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.current-page-ancestor > .awb-menu__main-a {
+	color: var(--nv-current-text) !important;
+}
+
+/* Keyboard users still need to see where they are. Tabbing through the menu
+   with the keyboard keeps showing the tab - that is a focus indicator, not a
+   hover effect, and it never fires from the mouse. Deleting these two rules
+   would leave keyboard users with no visible position in the menu. */
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:focus-within > .awb-menu__main-background-active {
+	opacity: 1;
+}
+
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:focus-within > .awb-menu__main-a {
+	color: var(--nv-hover-text) !important;
+}
+
+/* OPTIONAL - a quiet hover cue so the menu still feels clickable.
+   Uncomment to turn the label your brand green on hover, with no tab. */
+/*
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:not(.current-menu-item):not(.current-menu-parent):not(.current-menu-ancestor):hover > .awb-menu__main-a {
+	color: #00645E !important;
+}
+*/
+
+/* ---------------------------------------------------------------------
+   NOTE - there is a second, older file-folder tab implementation living in
+   Avada-Child-Theme/style.css (it uses --nv-tab-bg / --nv-tab-rise / etc.
+   and selectors starting .awb-menu_desktop[aria-label="Main Menu"]).
+
+   One of its rules says: "while any item is hovered, hide the active
+   highlight on all the others". That rule directly cancels the behaviour in
+   this section - the current page's tab would blank out the moment the mouse
+   touched the menu. The two rules immediately above out-specify it, so this
+   file works whether or not that block is still there.
+
+   The clean fix is to delete that block from the child theme so only one
+   implementation is live. See the handover notes.
+   --------------------------------------------------------------------- */
 </style>
 <style id="variant"></style>
 </head>

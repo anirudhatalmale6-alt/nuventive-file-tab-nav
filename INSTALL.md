@@ -40,8 +40,8 @@ need to touch the rules underneath.
 ```css
 --nv-hover-bg:      #09332E;  /* tab fill on hover */
 --nv-hover-text:    #FFFFFF;  /* label colour on hover */
---nv-current-bg:    #CFD200;  /* tab fill for the page you are on */
---nv-current-text:  #09332E;  /* label colour for that tab */
+--nv-current-bg:    #09332E;  /* tab fill for the page you are on */
+--nv-current-text:  #FFFFFF;  /* label colour for that tab */
 
 --nv-radius:        9px;      /* roundness of the tab's top corners */
 --nv-flare:         0px;      /* 0 = straight sides (manila folder). 12-16px = flared feet */
@@ -81,8 +81,7 @@ ul[id^="menu-main-menu"]{ --nv-hover-text:#CFD200; }
    and already fades it in. The snippet only reshapes that layer into a folder
    tab (rounded top, straight sides, sitting flush on the bottom edge of the
    white bar) and recolours it.
-4. **Active state** — the tab for the page you are on stays raised in bright
-   green. It covers `current-menu-item` (that exact page) and
+4. **Active state** — the tab for the page you are on stays raised. It covers `current-menu-item` (that exact page) and
    `current-menu-ancestor` / `current-menu-parent` (any page inside that
    dropdown), so "Solutions" stays lit while you are on *Program Review*.
 5. **Keyboard** — tabbing through the menu with the keyboard raises the same tab.
@@ -110,10 +109,58 @@ Measured on the live Contact page, hovering *Upcoming Events*:
 
 ---
 
+# Current-page-only mode (section 8)
+
+Section 8 at the bottom of the file turns the tab into a **"you are here"**
+marker only: moving the mouse across the menu does nothing, and the tab shows
+only on the page you are actually on.
+
+Delete that whole block to go back to the tab following the mouse. Nothing
+above it needs touching.
+
+Two things to be aware of in this mode:
+
+1. **Pages that are not in the main menu show no tab at all.** The homepage,
+   blog posts and event pages are not top-level menu items, so on those pages
+   the menu is completely flat with no highlight anywhere. Verified on
+   `/` (nothing lit), `/contact/` (Contact lit) and
+   `/solutions/program-review/` (Solutions lit, via the dropdown ancestor).
+2. **There is no mouse feedback on the menu at all.** If that feels too dead,
+   uncomment the optional rule at the very bottom of section 8 - it tints the
+   label on hover without drawing a tab.
+
+---
+
+# Conflict with the child theme - please read
+
+`Avada-Child-Theme/style.css` currently contains a **second, different
+file-folder tab implementation** (variables named `--nv-tab-bg`,
+`--nv-tab-rise`, `--nv-tab-drop`, selectors starting
+`.awb-menu_desktop[aria-label="Main Menu"]`). It is live right now alongside
+this file, and the two overlap.
+
+The important one is its last rule:
+
+```css
+.awb-menu_desktop[aria-label="Main Menu"] > .awb-menu__main-ul:has(> li:is(:hover, :focus-within)) > li:not(:hover, :focus-within) > .awb-menu__main-background-active {
+	opacity: 0;
+}
+```
+
+That says *"while any item is hovered, hide the highlight on all the others"* -
+which cancels current-page-only mode outright: the tab would vanish the moment
+the mouse touched the menu. Section 8 out-specifies it, so this file behaves
+correctly either way, but **the clean fix is to delete that child-theme block**
+so only one implementation is live. Two sets of rules fighting over the same
+element will cause confusing results the next time either is changed.
+
+---
+
 # Tested on
 
 * `nuventive3dev.wpenginepowered.com` — home, `/contact/` (current-page tab),
-  and `/solutions/program-review/` (dropdown-ancestor tab)
+  and `/solutions/program-review/` (dropdown-ancestor tab), measured against
+  the live page with the child theme's conflicting rules in place
 * Desktop 1440px, the sticky/shrunk header after scrolling, and mobile 390px
 * Chromium / Chrome, and the same CSS features are supported by Firefox, Safari
   15.4+ and Edge. The only modern selector used is `:has()`, and it is only used
