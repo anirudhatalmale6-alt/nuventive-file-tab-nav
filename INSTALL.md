@@ -1,0 +1,110 @@
+# Where to put the CSS
+
+The snippet is `nuventive-file-tab-nav.css`. It is pure CSS — no JavaScript, no
+changes to your menu, no changes to any template file.
+
+Pick **one** of the two places below. Both survive theme and Avada updates.
+
+---
+
+## Option 1 — Additional CSS (quickest, recommended)
+
+1. WordPress admin → **Appearance → Customize → Additional CSS**
+2. Paste the whole contents of `nuventive-file-tab-nav.css` at the bottom
+3. **Publish**
+
+This lives in the database, so nothing can overwrite it when Avada or the theme
+updates.
+
+## Option 2 — Child theme stylesheet
+
+1. **Appearance → Theme File Editor**, with **Avada Child Theme** selected
+2. Open `style.css`
+3. Paste the whole contents of `nuventive-file-tab-nav.css` at the bottom
+4. **Update File**
+
+(If you edit over SFTP instead, the file is
+`/wp-content/themes/Avada-Child-Theme/style.css`.)
+
+> Your site runs **WP Rocket**, which minifies and caches CSS. After pasting,
+> go to **Settings → WP Rocket → Clear cache**, then hard-refresh the page
+> (Ctrl/Cmd + Shift + R) or you will keep seeing the old stylesheet.
+
+---
+
+# Adjusting it later
+
+Everything is driven by the block of variables at the top of the file. You never
+need to touch the rules underneath.
+
+```css
+--nv-hover-bg:      #09332E;  /* tab fill on hover */
+--nv-hover-text:    #FFFFFF;  /* label colour on hover */
+--nv-current-bg:    #CFD200;  /* tab fill for the page you are on */
+--nv-current-text:  #09332E;  /* label colour for that tab */
+
+--nv-radius:        12px;     /* roundness of the tab's top corners */
+--nv-flare:         16px;     /* size of the little outward "folder feet" */
+--nv-pad-x:         20px;     /* how far the tab reaches past the label */
+--nv-drop:          12px;     /* how far the tab sinks below the menu row */
+--nv-speed:         260ms;    /* fade speed */
+```
+
+A few examples:
+
+* **Sharper, more "manila folder"** → `--nv-radius: 6px; --nv-flare: 10px;`
+* **Chunkier tabs** → `--nv-pad-x: 32px;`
+* **No fade, instant** → `--nv-speed: 0ms;`
+* **No lift shadow** → delete the `filter: drop-shadow(...)` line in section 3
+
+---
+
+# What the snippet does, section by section
+
+1. **Dials** — the variables above.
+2. **Item height** — makes each menu item as tall as the white header bar, so the
+   area you can hover is exactly the tab you can see (no dead pixels at the
+   bottom of the tab). The label itself does not move by a single pixel.
+   It also pulls Avada's dropdown offset in by the same amount, so the flyout
+   opens in exactly the same place it does today.
+3. **The tab** — Avada already paints a background layer behind every menu item
+   and already fades it in. The snippet only reshapes that layer into a folder
+   tab (rounded top, flared feet, soft lift) and recolours it.
+4. **Active state** — the tab for the page you are on stays raised in bright
+   green. It covers `current-menu-item` (that exact page) and
+   `current-menu-ancestor` / `current-menu-parent` (any page inside that
+   dropdown), so "Solutions" stays lit while you are on *Program Review*.
+5. **Keyboard** — tabbing through the menu with the keyboard raises the same tab.
+6. **Reduced motion** — the fade is dropped for visitors who ask their OS for
+   reduced motion.
+7. **Mobile** — every rule is scoped to `:not(.collapse-enabled)`, so the
+   collapsed/mobile menu below 1200px is left exactly as it is today.
+
+---
+
+# One small bonus fix
+
+Today, hovering a menu item makes Avada swap in a 2px "active border", which is
+applied as extra padding. That widens the hovered item by 4px and nudges every
+other label sideways by up to 1.5px. The snippet zeroes that border (the tab
+draws its own edge), so that wobble — which exists on the site right now, before
+any of this — goes away.
+
+Measured on the live Contact page, hovering *Upcoming Events*:
+
+| | shift of the other labels |
+|---|---|
+| site as it is today | −1.5px … +1.5px |
+| with the snippet | 0px |
+
+---
+
+# Tested on
+
+* `nuventive3dev.wpenginepowered.com` — home, `/contact/` (current-page tab),
+  and `/solutions/program-review/` (dropdown-ancestor tab)
+* Desktop 1440px, the sticky/shrunk header after scrolling, and mobile 390px
+* Chromium / Chrome, and the same CSS features are supported by Firefox, Safari
+  15.4+ and Edge. The only modern selector used is `:has()`, and it is only used
+  as a belt-and-braces duplicate of a rule that is also written with a plain
+  attribute selector — so nothing breaks if a browser does not support it.

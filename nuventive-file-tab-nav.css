@@ -1,0 +1,191 @@
+/* =====================================================================
+   Nuventive — File-folder tab hover / active state for the Main Menu
+   Avada 7.x (Avada Builder "Menu" element)  •  Pure CSS, no JavaScript
+   ---------------------------------------------------------------------
+   Paste into:  Appearance → Customize → Additional CSS
+   (or Avada-Child-Theme/style.css)
+   ===================================================================== */
+
+/* ---- 1. Dials -------------------------------------------------------
+   Everything is driven from here. Change a value, the whole tab follows. */
+#menu-main-menu,
+ul[id^="menu-main-menu"] {
+	--nv-hover-bg:      #09332E;  /* tab fill on hover            */
+	--nv-hover-text:    #FFFFFF;  /* label colour on hover        */
+	--nv-current-bg:    #CFD200;  /* tab fill for the page you are on */
+	--nv-current-text:  #09332E;  /* label colour for that tab    */
+
+	--nv-radius:        12px;     /* roundness of the tab top corners */
+	--nv-flare:         16px;     /* size of the little "folder feet"  */
+	--nv-pad-x:         20px;     /* how far the tab reaches past the label */
+	--nv-drop:          12px;     /* how far the tab sinks below the menu row */
+	--nv-speed:         260ms;    /* fade speed                    */
+}
+
+/* ---- 2. Make the menu item as tall as the bar -----------------------
+   The hit area then matches the tab exactly - no "dead" pixels, and the
+   label does not move by a single pixel, so there is no layout shift. */
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li {
+	align-self: stretch;
+	align-items: center;
+}
+
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li > .awb-menu__main-a {
+	align-self: stretch;
+}
+
+/* Two housekeeping values on the menu element itself:
+
+   --awb-submenu-space : the dropdown hangs off the bottom of the item, and the
+     item just got taller, so pull the offset in by the same amount. The flyout
+     ends up in exactly the same place it is today.
+
+   --awb-active-border : Avada turns its 2px "active border" into extra padding
+     the moment you hover, which nudges every other label sideways by up to
+     1.5px. The tab draws its own edge, so we zero it and that wobble (which is
+     there today, before any of this CSS) disappears. */
+nav.awb-menu[aria-label="Main Menu"]:not(.collapse-enabled) {
+	--awb-submenu-space: 12px !important;
+	--awb-active-border-top: 0px !important;
+	--awb-active-border-right: 0px !important;
+	--awb-active-border-bottom: 0px !important;
+	--awb-active-border-left: 0px !important;
+}
+
+/* Same thing again, matched on the menu's ID instead of its label, so the
+   effect survives if the menu is ever renamed in Avada. */
+.awb-menu:not(.collapse-enabled):has(ul[id^="menu-main-menu"]) {
+	--awb-submenu-space: 12px !important;
+	--awb-active-border-top: 0px !important;
+	--awb-active-border-right: 0px !important;
+	--awb-active-border-bottom: 0px !important;
+	--awb-active-border-left: 0px !important;
+}
+
+/* ---- 3. The tab itself ----------------------------------------------
+   Avada already paints a background layer per item and already fades it in
+   on hover AND on the current page - we only reshape and recolour it. */
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li > .awb-menu__main-background-active {
+	--nv-bg: var(--nv-hover-bg);
+
+	top: 0;
+	bottom: calc(-1 * var(--nv-drop));
+	left: calc(-1 * var(--nv-pad-x));
+	right: calc(-1 * var(--nv-pad-x));
+	width: auto;
+	height: auto;
+
+	border: 0;
+	border-radius: var(--nv-radius) var(--nv-radius) 0 0;
+	background-color: var(--nv-bg);
+
+	/* the lift that makes the folder look pulled forward */
+	filter: drop-shadow(0 -2px 5px rgba(9, 51, 46, 0.20));
+
+	transition: opacity var(--nv-speed) cubic-bezier(.42, .01, .58, 1),
+	            background-color var(--nv-speed) cubic-bezier(.42, .01, .58, 1);
+}
+
+/* The two outward curves at the foot of the tab - this is what turns a
+   rounded rectangle into a file-folder tab. */
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li > .awb-menu__main-background-active::before,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li > .awb-menu__main-background-active::after {
+	content: "";
+	position: absolute;
+	bottom: 0;
+	width: var(--nv-flare);
+	height: var(--nv-flare);
+	pointer-events: none;
+}
+
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li > .awb-menu__main-background-active::before {
+	left: calc(-1 * var(--nv-flare) + 1px);
+	background: radial-gradient(circle at top left,
+	            rgba(0, 0, 0, 0) var(--nv-flare),
+	            var(--nv-bg) calc(var(--nv-flare) + 0.5px));
+}
+
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li > .awb-menu__main-background-active::after {
+	right: calc(-1 * var(--nv-flare) + 1px);
+	background: radial-gradient(circle at top right,
+	            rgba(0, 0, 0, 0) var(--nv-flare),
+	            var(--nv-bg) calc(var(--nv-flare) + 0.5px));
+}
+
+/* Hovered folder sits in front of its neighbours */
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:hover,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.hover,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.expanded {
+	z-index: 5;
+}
+
+/* Label + caret on a hovered tab */
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:hover > .awb-menu__main-a,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.hover > .awb-menu__main-a,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.expanded > .awb-menu__main-a {
+	color: var(--nv-hover-text) !important;
+}
+
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:hover > .awb-menu__main-a .awb-menu__open-nav-submenu-hover::before,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.hover > .awb-menu__main-a .awb-menu__open-nav-submenu-hover::before,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.expanded > .awb-menu__main-a .awb-menu__open-nav-submenu-hover::before {
+	color: var(--nv-hover-text) !important;
+}
+
+/* ---- 4. "Stays active after you click it" ---------------------------
+   The tab for the page you are currently on stays raised, in bright green.
+   current-menu-item   = that exact page
+   current-menu-ancestor / -parent = a page inside that dropdown */
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-menu-item > .awb-menu__main-background-active,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-menu-parent > .awb-menu__main-background-active,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-menu-ancestor > .awb-menu__main-background-active,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current_page_item > .awb-menu__main-background-active,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-page-ancestor > .awb-menu__main-background-active {
+	--nv-bg: var(--nv-current-bg);
+	opacity: 1;
+}
+
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-menu-item > .awb-menu__main-a,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-menu-parent > .awb-menu__main-a,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-menu-ancestor > .awb-menu__main-a,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current_page_item > .awb-menu__main-a,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-page-ancestor > .awb-menu__main-a {
+	color: var(--nv-current-text) !important;
+}
+
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-menu-item > .awb-menu__main-a .awb-menu__open-nav-submenu-hover::before,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-menu-parent > .awb-menu__main-a .awb-menu__open-nav-submenu-hover::before,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-menu-ancestor > .awb-menu__main-a .awb-menu__open-nav-submenu-hover::before,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current_page_item > .awb-menu__main-a .awb-menu__open-nav-submenu-hover::before,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-page-ancestor > .awb-menu__main-a .awb-menu__open-nav-submenu-hover::before {
+	color: var(--nv-current-text) !important;
+}
+
+/* Hover always wins, even on the current page's own tab */
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:hover > .awb-menu__main-background-active,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.hover > .awb-menu__main-background-active,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.expanded > .awb-menu__main-background-active {
+	--nv-bg: var(--nv-hover-bg);
+	opacity: 1;
+}
+
+/* ---- 5. Keyboard users get the same tab ----------------------------- */
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:focus-within > .awb-menu__main-background-active {
+	--nv-bg: var(--nv-hover-bg);
+	opacity: 1;
+}
+
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:focus-within > .awb-menu__main-a {
+	color: var(--nv-hover-text) !important;
+}
+
+/* ---- 6. Respect "reduce motion" ------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+	.awb-menu ul[id^="menu-main-menu"] > li.awb-menu__main-li > .awb-menu__main-background-active {
+		transition: none;
+	}
+}
+
+/* ---- 7. Mobile / collapsed menu is left exactly as it is ------------
+   (Avada hides these background layers below the 1200px breakpoint, and
+   every rule above is scoped to :not(.collapse-enabled).) */

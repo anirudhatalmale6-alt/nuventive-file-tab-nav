@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nuventive — file-tab navigation (preview)</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ---------- minimal stand-in for the Avada menu base (your live site already has this) ---------- */
+*{box-sizing:border-box}
+body{margin:0;font-family:Roboto,Arial,sans-serif;color:#09332E;background:#fff}
+.topbar{background:#FFF3D9;height:50px;display:flex;align-items:center;gap:26px;padding:0 104px;font-size:15px}
+.topbar a{color:#09332E;text-decoration:none}
+.headerband{background:#fff;height:92px;display:flex;align-items:center;padding:0 80px;position:relative;z-index:10}
+.logo{font-size:26px;font-weight:600;letter-spacing:-.3px;white-space:nowrap}
+.logo i{display:inline-block;width:30px;height:30px;background:linear-gradient(135deg,#CFD200 50%,#00645E 50%);vertical-align:-5px;margin-right:10px;border-radius:3px}
+.awb-menu{--awb-gap:15px;--awb-min-height:68px;--awb-submenu-space:34px;
+  --awb-color:#09332E;--awb-bg:#fff;--awb-active-bg:#09332E;--awb-active-color:#fff;
+  --awb-active-border-top:2px;--awb-active-border-right:2px;--awb-active-border-bottom:2px;--awb-active-border-left:2px;
+  --awb-transition-time:300;
+  flex:1;display:flex;justify-content:flex-end;min-height:var(--awb-min-height)}
+.awb-menu__main-ul{display:flex;align-items:center;justify-content:space-evenly;flex:1;max-width:974px;
+  list-style:none;margin:0;padding:0;min-height:var(--awb-min-height)}
+.awb-menu__main-li{position:relative;display:flex;justify-content:center;
+  margin-left:calc(var(--awb-gap)/2);margin-right:calc(var(--awb-gap)/2);font-size:17px;font-weight:500}
+.awb-menu__main-li>*{z-index:10}
+.awb-menu__main-background-active,.awb-menu__main-background-default{position:absolute;top:0;left:0;width:100%;height:100%;
+  z-index:1;border-style:solid;border-width:0;transition:opacity 300ms cubic-bezier(.42,.01,.58,1)}
+.awb-menu__main-background-default{background:var(--awb-bg)}
+.awb-menu__main-background-active{background:var(--awb-active-bg);opacity:0;
+  border-width:var(--awb-active-border-top) var(--awb-active-border-right) var(--awb-active-border-bottom) var(--awb-active-border-left);
+  border-color:var(--awb-active-bg)}
+.awb-menu__main-li:hover>.awb-menu__main-background-active,
+.awb-menu__main-li.current-menu-item>.awb-menu__main-background-active{opacity:1}
+.awb-menu__main-a{display:flex;align-items:center;justify-content:center;width:100%;white-space:nowrap;
+  color:var(--awb-color)!important;text-decoration:none;padding:2px 0 0;
+  transition:color 300ms cubic-bezier(.42,.01,.58,1)}
+.awb-menu__main-li:hover>.awb-menu__main-a{padding:4px 2px 2px;color:var(--awb-active-color)!important}
+.awb-menu__main-li.current-menu-item>.awb-menu__main-a{color:var(--awb-active-color)!important}
+.awb-menu__open-nav-submenu-hover{width:9px;height:9px;margin-left:9px;border-right:2px solid currentColor;
+  border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:color 300ms}
+.awb-menu__open-nav-submenu-hover::before{content:""}
+.awb-menu__sub-ul{position:absolute;top:calc(100% + var(--awb-submenu-space));left:50%;transform:translateX(-50%);
+  min-width:280px;background:#fff;list-style:none;margin:0;padding:0;opacity:0;visibility:hidden;
+  box-shadow:0 10px 20px rgba(0,0,0,.08);transition:opacity 300ms;z-index:50}
+.awb-menu__main-li:hover>.awb-menu__sub-ul{opacity:1;visibility:visible}
+.awb-menu__sub-li+.awb-menu__sub-li{border-top:1px solid rgba(9,51,46,.18)}
+.awb-menu__sub-a{display:block;padding:22px 35px;color:#09332E;text-decoration:none;font-size:17px;font-weight:500}
+.awb-menu__sub-a:hover{background:#fff;color:#00645E}
+.awb-menu_row.awb-menu_em-hover .awb-menu__main-li:hover:before{content:" ";position:absolute;
+  bottom:calc(0px - var(--awb-submenu-space));width:100%;height:var(--awb-submenu-space);background:0 0;z-index:30}
+.hero{background:#09332E;color:#fff;padding:70px 80px 90px;font-size:15px;line-height:1.7}
+.hero h1{font-family:Georgia,serif;font-size:46px;margin:0 0 14px;max-width:620px;line-height:1.15}
+.hero p{max-width:560px;color:rgba(255,255,255,.82);margin:0}
+.lightpage .hero{background:#FFF3D9;color:#09332E}
+.lightpage .hero p{color:rgba(9,51,46,.78)}
+
+/* ---------- panel ---------- */
+.panel{padding:26px 80px 70px;background:#fff}
+.panel h2{font-size:15px;letter-spacing:.09em;text-transform:uppercase;color:#00645E;margin:0 0 14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:22px}
+.btn{border:2px solid #09332E;background:#fff;color:#09332E;font:500 14px Roboto,sans-serif;
+  padding:10px 16px;border-radius:6px;cursor:pointer}
+.btn[aria-pressed="true"]{background:#09332E;color:#fff}
+.note{font-size:14px;line-height:1.75;color:#3c5a55;max-width:760px}
+.note b{color:#09332E}
+@media(max-width:1200px){.headerband{display:block;height:auto;padding:16px 24px}
+  .awb-menu__main-ul{flex-wrap:wrap;justify-content:flex-start}.topbar{padding:0 24px}
+  .hero{padding:40px 24px 60px}.hero h1{font-size:32px}.panel{padding:24px}}
+</style>
+<style id="tabcss">/* =====================================================================
+   Nuventive — File-folder tab hover / active state for the Main Menu
+   Avada 7.x (Avada Builder "Menu" element)  •  Pure CSS, no JavaScript
+   ---------------------------------------------------------------------
+   Paste into:  Appearance → Customize → Additional CSS
+   (or Avada-Child-Theme/style.css)
+   ===================================================================== */
+
+/* ---- 1. Dials -------------------------------------------------------
+   Everything is driven from here. Change a value, the whole tab follows. */
+#menu-main-menu,
+ul[id^="menu-main-menu"] {
+	--nv-hover-bg:      #09332E;  /* tab fill on hover            */
+	--nv-hover-text:    #FFFFFF;  /* label colour on hover        */
+	--nv-current-bg:    #CFD200;  /* tab fill for the page you are on */
+	--nv-current-text:  #09332E;  /* label colour for that tab    */
+
+	--nv-radius:        12px;     /* roundness of the tab top corners */
+	--nv-flare:         16px;     /* size of the little "folder feet"  */
+	--nv-pad-x:         20px;     /* how far the tab reaches past the label */
+	--nv-drop:          12px;     /* how far the tab sinks below the menu row */
+	--nv-speed:         260ms;    /* fade speed                    */
+}
+
+/* ---- 2. Make the menu item as tall as the bar -----------------------
+   The hit area then matches the tab exactly - no "dead" pixels, and the
+   label does not move by a single pixel, so there is no layout shift. */
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li {
+	align-self: stretch;
+	align-items: center;
+}
+
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li > .awb-menu__main-a {
+	align-self: stretch;
+}
+
+/* Two housekeeping values on the menu element itself:
+
+   --awb-submenu-space : the dropdown hangs off the bottom of the item, and the
+     item just got taller, so pull the offset in by the same amount. The flyout
+     ends up in exactly the same place it is today.
+
+   --awb-active-border : Avada turns its 2px "active border" into extra padding
+     the moment you hover, which nudges every other label sideways by up to
+     1.5px. The tab draws its own edge, so we zero it and that wobble (which is
+     there today, before any of this CSS) disappears. */
+nav.awb-menu[aria-label="Main Menu"]:not(.collapse-enabled) {
+	--awb-submenu-space: 12px !important;
+	--awb-active-border-top: 0px !important;
+	--awb-active-border-right: 0px !important;
+	--awb-active-border-bottom: 0px !important;
+	--awb-active-border-left: 0px !important;
+}
+
+/* Same thing again, matched on the menu's ID instead of its label, so the
+   effect survives if the menu is ever renamed in Avada. */
+.awb-menu:not(.collapse-enabled):has(ul[id^="menu-main-menu"]) {
+	--awb-submenu-space: 12px !important;
+	--awb-active-border-top: 0px !important;
+	--awb-active-border-right: 0px !important;
+	--awb-active-border-bottom: 0px !important;
+	--awb-active-border-left: 0px !important;
+}
+
+/* ---- 3. The tab itself ----------------------------------------------
+   Avada already paints a background layer per item and already fades it in
+   on hover AND on the current page - we only reshape and recolour it. */
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li > .awb-menu__main-background-active {
+	--nv-bg: var(--nv-hover-bg);
+
+	top: 0;
+	bottom: calc(-1 * var(--nv-drop));
+	left: calc(-1 * var(--nv-pad-x));
+	right: calc(-1 * var(--nv-pad-x));
+	width: auto;
+	height: auto;
+
+	border: 0;
+	border-radius: var(--nv-radius) var(--nv-radius) 0 0;
+	background-color: var(--nv-bg);
+
+	/* the lift that makes the folder look pulled forward */
+	filter: drop-shadow(0 -2px 5px rgba(9, 51, 46, 0.20));
+
+	transition: opacity var(--nv-speed) cubic-bezier(.42, .01, .58, 1),
+	            background-color var(--nv-speed) cubic-bezier(.42, .01, .58, 1);
+}
+
+/* The two outward curves at the foot of the tab - this is what turns a
+   rounded rectangle into a file-folder tab. */
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li > .awb-menu__main-background-active::before,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li > .awb-menu__main-background-active::after {
+	content: "";
+	position: absolute;
+	bottom: 0;
+	width: var(--nv-flare);
+	height: var(--nv-flare);
+	pointer-events: none;
+}
+
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li > .awb-menu__main-background-active::before {
+	left: calc(-1 * var(--nv-flare) + 1px);
+	background: radial-gradient(circle at top left,
+	            rgba(0, 0, 0, 0) var(--nv-flare),
+	            var(--nv-bg) calc(var(--nv-flare) + 0.5px));
+}
+
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li > .awb-menu__main-background-active::after {
+	right: calc(-1 * var(--nv-flare) + 1px);
+	background: radial-gradient(circle at top right,
+	            rgba(0, 0, 0, 0) var(--nv-flare),
+	            var(--nv-bg) calc(var(--nv-flare) + 0.5px));
+}
+
+/* Hovered folder sits in front of its neighbours */
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:hover,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.hover,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.expanded {
+	z-index: 5;
+}
+
+/* Label + caret on a hovered tab */
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:hover > .awb-menu__main-a,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.hover > .awb-menu__main-a,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.expanded > .awb-menu__main-a {
+	color: var(--nv-hover-text) !important;
+}
+
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:hover > .awb-menu__main-a .awb-menu__open-nav-submenu-hover::before,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.hover > .awb-menu__main-a .awb-menu__open-nav-submenu-hover::before,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.expanded > .awb-menu__main-a .awb-menu__open-nav-submenu-hover::before {
+	color: var(--nv-hover-text) !important;
+}
+
+/* ---- 4. "Stays active after you click it" ---------------------------
+   The tab for the page you are currently on stays raised, in bright green.
+   current-menu-item   = that exact page
+   current-menu-ancestor / -parent = a page inside that dropdown */
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-menu-item > .awb-menu__main-background-active,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-menu-parent > .awb-menu__main-background-active,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-menu-ancestor > .awb-menu__main-background-active,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current_page_item > .awb-menu__main-background-active,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-page-ancestor > .awb-menu__main-background-active {
+	--nv-bg: var(--nv-current-bg);
+	opacity: 1;
+}
+
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-menu-item > .awb-menu__main-a,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-menu-parent > .awb-menu__main-a,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-menu-ancestor > .awb-menu__main-a,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current_page_item > .awb-menu__main-a,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-page-ancestor > .awb-menu__main-a {
+	color: var(--nv-current-text) !important;
+}
+
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-menu-item > .awb-menu__main-a .awb-menu__open-nav-submenu-hover::before,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-menu-parent > .awb-menu__main-a .awb-menu__open-nav-submenu-hover::before,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-menu-ancestor > .awb-menu__main-a .awb-menu__open-nav-submenu-hover::before,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current_page_item > .awb-menu__main-a .awb-menu__open-nav-submenu-hover::before,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.current-page-ancestor > .awb-menu__main-a .awb-menu__open-nav-submenu-hover::before {
+	color: var(--nv-current-text) !important;
+}
+
+/* Hover always wins, even on the current page's own tab */
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:hover > .awb-menu__main-background-active,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.hover > .awb-menu__main-background-active,
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li.expanded > .awb-menu__main-background-active {
+	--nv-bg: var(--nv-hover-bg);
+	opacity: 1;
+}
+
+/* ---- 5. Keyboard users get the same tab ----------------------------- */
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:focus-within > .awb-menu__main-background-active {
+	--nv-bg: var(--nv-hover-bg);
+	opacity: 1;
+}
+
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li:focus-within > .awb-menu__main-a {
+	color: var(--nv-hover-text) !important;
+}
+
+/* ---- 6. Respect "reduce motion" ------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+	.awb-menu ul[id^="menu-main-menu"] > li.awb-menu__main-li > .awb-menu__main-background-active {
+		transition: none;
+	}
+}
+
+/* ---- 7. Mobile / collapsed menu is left exactly as it is ------------
+   (Avada hides these background layers below the 1200px breakpoint, and
+   every rule above is scoped to :not(.collapse-enabled).) */
+</style>
+<style id="variant"></style>
+</head>
+<body>
+<div class="topbar"><a href="#">Customer Login</a><a href="#">Customer Knowledge Base</a>
+  <span style="margin-left:auto"><a href="#">Request A Demo</a></span></div>
+
+<div class="headerband">
+  <div class="logo"><i></i>Nuventive<sub style="font-size:11px">&trade;</sub></div>
+  <nav class="awb-menu awb-menu_row awb-menu_em-hover" aria-label="Main Menu">
+    <ul id="menu-main-menu" class="awb-menu__main-ul"><li class="menu-item awb-menu__li awb-menu__main-li awb-menu__main-li_regular menu-item-has-children" data-i="0"><span class="awb-menu__main-background-default"></span><span class="awb-menu__main-background-active"></span><a class="awb-menu__main-a" href="#"><span class="menu-text">Solutions</span><span class="awb-menu__open-nav-submenu-hover"></span></a><ul class="awb-menu__sub-ul"><li class="awb-menu__sub-li"><a class="awb-menu__sub-a" href="#"><span>Solutions Overview</span></a></li><li class="awb-menu__sub-li"><a class="awb-menu__sub-a" href="#"><span>Outcomes Assessment</span></a></li><li class="awb-menu__sub-li"><a class="awb-menu__sub-a" href="#"><span>Program Review</span></a></li><li class="awb-menu__sub-li"><a class="awb-menu__sub-a" href="#"><span>Student Success</span></a></li><li class="awb-menu__sub-li"><a class="awb-menu__sub-a" href="#"><span>Strategic Plans</span></a></li><li class="awb-menu__sub-li"><a class="awb-menu__sub-a" href="#"><span>Accreditation Support</span></a></li><li class="awb-menu__sub-li"><a class="awb-menu__sub-a" href="#"><span>Data-Informed Improvement</span></a></li></ul></li><li class="menu-item awb-menu__li awb-menu__main-li awb-menu__main-li_regular menu-item-has-children" data-i="1"><span class="awb-menu__main-background-default"></span><span class="awb-menu__main-background-active"></span><a class="awb-menu__main-a" href="#"><span class="menu-text">Who We Serve</span><span class="awb-menu__open-nav-submenu-hover"></span></a><ul class="awb-menu__sub-ul"><li class="awb-menu__sub-li"><a class="awb-menu__sub-a" href="#"><span>Who We Serve Overview</span></a></li><li class="awb-menu__sub-li"><a class="awb-menu__sub-a" href="#"><span>Institutional Leadership</span></a></li><li class="awb-menu__sub-li"><a class="awb-menu__sub-a" href="#"><span>CIOs &#038; Decision Support Leaders</span></a></li><li class="awb-menu__sub-li"><a class="awb-menu__sub-a" href="#"><span>Assessment Professionals</span></a></li><li class="awb-menu__sub-li"><a class="awb-menu__sub-a" href="#"><span>Systems &#038; Consortia</span></a></li></ul></li><li class="menu-item awb-menu__li awb-menu__main-li awb-menu__main-li_regular menu-item-has-children" data-i="2"><span class="awb-menu__main-background-default"></span><span class="awb-menu__main-background-active"></span><a class="awb-menu__main-a" href="#"><span class="menu-text">Case Studies</span><span class="awb-menu__open-nav-submenu-hover"></span></a><ul class="awb-menu__sub-ul"><li class="awb-menu__sub-li"><a class="awb-menu__sub-a" href="#"><span>Case Studies Overview</span></a></li><li class="awb-menu__sub-li"><a class="awb-menu__sub-a" href="#"><span>Customer Videos</span></a></li></ul></li><li class="menu-item awb-menu__li awb-menu__main-li awb-menu__main-li_regular" data-i="3"><span class="awb-menu__main-background-default"></span><span class="awb-menu__main-background-active"></span><a class="awb-menu__main-a" href="#"><span class="menu-text">Upcoming Events</span></a></li><li class="menu-item awb-menu__li awb-menu__main-li awb-menu__main-li_regular menu-item-has-children" data-i="4"><span class="awb-menu__main-background-default"></span><span class="awb-menu__main-background-active"></span><a class="awb-menu__main-a" href="#"><span class="menu-text">About</span><span class="awb-menu__open-nav-submenu-hover"></span></a><ul class="awb-menu__sub-ul"><li class="awb-menu__sub-li"><a class="awb-menu__sub-a" href="#"><span>About Overview</span></a></li><li class="awb-menu__sub-li"><a class="awb-menu__sub-a" href="#"><span>Leadership</span></a></li><li class="awb-menu__sub-li"><a class="awb-menu__sub-a" href="#"><span>Careers</span></a></li><li class="awb-menu__sub-li"><a class="awb-menu__sub-a" href="#"><span>News</span></a></li><li class="awb-menu__sub-li"><a class="awb-menu__sub-a" href="#"><span>Partners</span></a></li></ul></li><li class="menu-item awb-menu__li awb-menu__main-li awb-menu__main-li_regular menu-item-has-children" data-i="5"><span class="awb-menu__main-background-default"></span><span class="awb-menu__main-background-active"></span><a class="awb-menu__main-a" href="#"><span class="menu-text">Evidence &#038; Insights</span><span class="awb-menu__open-nav-submenu-hover"></span></a><ul class="awb-menu__sub-ul"><li class="awb-menu__sub-li"><a class="awb-menu__sub-a" href="#"><span>Evidence &#038; Insights Overview</span></a></li><li class="awb-menu__sub-li"><a class="awb-menu__sub-a" href="#"><span>Blog</span></a></li><li class="awb-menu__sub-li"><a class="awb-menu__sub-a" href="#"><span>Resources</span></a></li></ul></li><li class="menu-item awb-menu__li awb-menu__main-li awb-menu__main-li_regular current-menu-item" data-i="6"><span class="awb-menu__main-background-default"></span><span class="awb-menu__main-background-active"></span><a class="awb-menu__main-a" href="#"><span class="menu-text">Contact</span></a></li></ul>
+  </nav>
+</div>
+
+<div class="hero">
+  <h1>Hover the menu above.</h1>
+  <p>The tab is pure CSS. Nothing on the page moves &mdash; the labels stay on exactly the same pixel,
+     hovered or not. The green tab on <b>Contact</b> is the &ldquo;you are here&rdquo; state: it stays raised
+     after you click through to a page, and it also lights up when you are on any page inside a dropdown.</p>
+</div>
+
+<div class="panel">
+  <h2>Colour options &mdash; pick one and I'll lock it in</h2>
+  <div class="row">
+    <button class="btn" data-v="a" aria-pressed="true">A &middot; hover dark green, white label</button>
+    <button class="btn" data-v="b" aria-pressed="false">B &middot; hover dark green, bright green label</button>
+    <button class="btn" data-v="c" aria-pressed="false">C &middot; hover bright green, active dark green</button>
+  </div>
+  <h2>Shape</h2>
+  <div class="row">
+    <button class="btn" data-s="soft" aria-pressed="true">Soft corners</button>
+    <button class="btn" data-s="sharp" aria-pressed="false">Sharper, more "manila folder"</button>
+    <button class="btn" data-s="wide" aria-pressed="false">Wider tab</button>
+  </div>
+  <div class="row">
+    <button class="btn" data-page="dark" aria-pressed="true">Dark hero (home)</button>
+    <button class="btn" data-page="light" aria-pressed="false">Light hero (inner page)</button>
+    <button class="btn" data-off aria-pressed="false">Turn the effect off (before/after)</button>
+  </div>
+  <p class="note">This page is a stand-alone copy of your header so you can play with it safely.
+    I have already tested the exact same CSS against the real
+    <b>nuventive3dev.wpenginepowered.com</b> pages &mdash; home, Contact, and a page nested inside the
+    Solutions dropdown &mdash; in desktop, sticky-header and mobile widths.</p>
+</div>
+
+<script>
+var V={
+ a:'ul[id^="menu-main-menu"]{--nv-hover-bg:#09332E;--nv-hover-text:#FFFFFF;--nv-current-bg:#CFD200;--nv-current-text:#09332E;}',
+ b:'ul[id^="menu-main-menu"]{--nv-hover-bg:#09332E;--nv-hover-text:#CFD200;--nv-current-bg:#CFD200;--nv-current-text:#09332E;}',
+ c:'ul[id^="menu-main-menu"]{--nv-hover-bg:#CFD200;--nv-hover-text:#09332E;--nv-current-bg:#09332E;--nv-current-text:#FFFFFF;}'
+};
+var S={
+ soft:'ul[id^="menu-main-menu"]{--nv-radius:12px;--nv-flare:16px;--nv-pad-x:20px;}',
+ sharp:'ul[id^="menu-main-menu"]{--nv-radius:6px;--nv-flare:10px;--nv-pad-x:20px;}',
+ wide:'ul[id^="menu-main-menu"]{--nv-radius:14px;--nv-flare:18px;--nv-pad-x:32px;}'
+};
+var cur={v:'a',s:'soft'};
+function apply(){document.getElementById('variant').textContent=V[cur.v]+S[cur.s];}
+function press(sel,el){document.querySelectorAll(sel).forEach(function(b){b.setAttribute('aria-pressed',b===el?'true':'false');});}
+document.querySelectorAll('[data-v]').forEach(function(b){b.onclick=function(){cur.v=b.dataset.v;press('[data-v]',b);apply();};});
+document.querySelectorAll('[data-s]').forEach(function(b){b.onclick=function(){cur.s=b.dataset.s;press('[data-s]',b);apply();};});
+document.querySelectorAll('[data-page]').forEach(function(b){b.onclick=function(){
+  document.body.classList.toggle('lightpage',b.dataset.page==='light');press('[data-page]',b);};});
+var off=false,saved='';
+document.querySelector('[data-off]').onclick=function(){
+  var t=document.getElementById('tabcss');off=!off;
+  if(off){saved=t.textContent;t.textContent='';this.textContent='Turn the effect back on';this.setAttribute('aria-pressed','true');}
+  else{t.textContent=saved;this.textContent='Turn the effect off (before/after)';this.setAttribute('aria-pressed','false');}};
+apply();
+</script>
+</body></html>
