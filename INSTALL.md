@@ -43,19 +43,29 @@ need to touch the rules underneath.
 --nv-current-bg:    #CFD200;  /* tab fill for the page you are on */
 --nv-current-text:  #09332E;  /* label colour for that tab */
 
---nv-radius:        12px;     /* roundness of the tab's top corners */
---nv-flare:         16px;     /* size of the little outward "folder feet" */
---nv-pad-x:         20px;     /* how far the tab reaches past the label */
+--nv-radius:        9px;      /* roundness of the tab's top corners */
+--nv-flare:         0px;      /* 0 = straight sides (manila folder). 12-16px = flared feet */
+--nv-pad-x:         14px;     /* how far the tab reaches past the label */
+--nv-inset-top:     16px;     /* white space left above the tab */
 --nv-drop:          12px;     /* how far the tab sinks below the menu row */
 --nv-speed:         260ms;    /* fade speed */
+--nv-lift:          none;     /* drop-shadow(...) if you want the tab to cast a shadow */
 ```
 
 A few examples:
 
-* **Sharper, more "manila folder"** → `--nv-radius: 6px; --nv-flare: 10px;`
-* **Chunkier tabs** → `--nv-pad-x: 32px;`
+* **Narrower / wider tab** → `--nv-pad-x: 10px;` / `--nv-pad-x: 24px;`
+* **Shorter / taller tab** → raise or lower `--nv-inset-top`
+* **Flared "feet" instead of straight sides** → `--nv-flare: 16px;`
 * **No fade, instant** → `--nv-speed: 0ms;`
-* **No lift shadow** → delete the `filter: drop-shadow(...)` line in section 3
+* **Give the tab a shadow** → `--nv-lift: drop-shadow(0 -2px 5px rgba(9,51,46,.2));`
+
+Because the variables block is written without an `#id`, you can override any single
+value later with a one-line rule and it will win:
+
+```css
+ul[id^="menu-main-menu"]{ --nv-hover-text:#CFD200; }
+```
 
 ---
 
@@ -69,7 +79,8 @@ A few examples:
    opens in exactly the same place it does today.
 3. **The tab** — Avada already paints a background layer behind every menu item
    and already fades it in. The snippet only reshapes that layer into a folder
-   tab (rounded top, flared feet, soft lift) and recolours it.
+   tab (rounded top, straight sides, sitting flush on the bottom edge of the
+   white bar) and recolours it.
 4. **Active state** — the tab for the page you are on stays raised in bright
    green. It covers `current-menu-item` (that exact page) and
    `current-menu-ancestor` / `current-menu-parent` (any page inside that

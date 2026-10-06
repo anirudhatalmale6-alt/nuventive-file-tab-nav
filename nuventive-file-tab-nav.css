@@ -7,19 +7,25 @@
    ===================================================================== */
 
 /* ---- 1. Dials -------------------------------------------------------
-   Everything is driven from here. Change a value, the whole tab follows. */
-#menu-main-menu,
+   Everything is driven from here. Change a value, the whole tab follows.
+   (Deliberately no #id in this selector, so you can override any of these
+   later with a plain one-line rule and have it actually win.) */
 ul[id^="menu-main-menu"] {
 	--nv-hover-bg:      #09332E;  /* tab fill on hover            */
 	--nv-hover-text:    #FFFFFF;  /* label colour on hover        */
 	--nv-current-bg:    #CFD200;  /* tab fill for the page you are on */
 	--nv-current-text:  #09332E;  /* label colour for that tab    */
 
-	--nv-radius:        12px;     /* roundness of the tab top corners */
-	--nv-flare:         16px;     /* size of the little "folder feet"  */
-	--nv-pad-x:         20px;     /* how far the tab reaches past the label */
+	--nv-radius:        9px;      /* roundness of the tab top corners */
+	--nv-flare:         0px;      /* outward "feet" at the foot of the tab.
+	                                 0 = straight sides, like a manila folder.
+	                                 Try 12-16px if you ever want the flared look. */
+	--nv-pad-x:         14px;     /* how far the tab reaches past the label */
+	--nv-inset-top:     16px;     /* white space left above the tab */
 	--nv-drop:          12px;     /* how far the tab sinks below the menu row */
 	--nv-speed:         260ms;    /* fade speed                    */
+	--nv-lift:          none;     /* set to e.g. drop-shadow(0 -2px 5px rgba(9,51,46,.2))
+	                                 if you ever want the tab to cast a shadow */
 }
 
 /* ---- 2. Make the menu item as tall as the bar -----------------------
@@ -68,7 +74,7 @@ nav.awb-menu[aria-label="Main Menu"]:not(.collapse-enabled) {
 .awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li > .awb-menu__main-background-active {
 	--nv-bg: var(--nv-hover-bg);
 
-	top: 0;
+	top: var(--nv-inset-top);
 	bottom: calc(-1 * var(--nv-drop));
 	left: calc(-1 * var(--nv-pad-x));
 	right: calc(-1 * var(--nv-pad-x));
@@ -79,8 +85,7 @@ nav.awb-menu[aria-label="Main Menu"]:not(.collapse-enabled) {
 	border-radius: var(--nv-radius) var(--nv-radius) 0 0;
 	background-color: var(--nv-bg);
 
-	/* the lift that makes the folder look pulled forward */
-	filter: drop-shadow(0 -2px 5px rgba(9, 51, 46, 0.20));
+	filter: var(--nv-lift);
 
 	transition: opacity var(--nv-speed) cubic-bezier(.42, .01, .58, 1),
 	            background-color var(--nv-speed) cubic-bezier(.42, .01, .58, 1);

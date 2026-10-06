@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Nuventive — file-tab navigation (preview)</title>
+<title>Nuventive &mdash; file-tab navigation (preview)</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ---------- minimal stand-in for the Avada menu base (your live site already has this) ---------- */
@@ -60,8 +60,10 @@ body{margin:0;font-family:Roboto,Arial,sans-serif;color:#09332E;background:#fff}
 .btn{border:2px solid #09332E;background:#fff;color:#09332E;font:500 14px Roboto,sans-serif;
   padding:10px 16px;border-radius:6px;cursor:pointer}
 .btn[aria-pressed="true"]{background:#09332E;color:#fff}
-.note{font-size:14px;line-height:1.75;color:#3c5a55;max-width:760px}
+.note{font-size:14px;line-height:1.75;color:#3c5a55;max-width:780px}
 .note b{color:#09332E}
+.flag{border-left:4px solid #CFD200;background:#fbfdf0;padding:14px 18px;margin:0 0 24px;max-width:780px;
+  font-size:14px;line-height:1.75;color:#3c5a55}
 @media(max-width:1200px){.headerband{display:block;height:auto;padding:16px 24px}
   .awb-menu__main-ul{flex-wrap:wrap;justify-content:flex-start}.topbar{padding:0 24px}
   .hero{padding:40px 24px 60px}.hero h1{font-size:32px}.panel{padding:24px}}
@@ -75,19 +77,25 @@ body{margin:0;font-family:Roboto,Arial,sans-serif;color:#09332E;background:#fff}
    ===================================================================== */
 
 /* ---- 1. Dials -------------------------------------------------------
-   Everything is driven from here. Change a value, the whole tab follows. */
-#menu-main-menu,
+   Everything is driven from here. Change a value, the whole tab follows.
+   (Deliberately no #id in this selector, so you can override any of these
+   later with a plain one-line rule and have it actually win.) */
 ul[id^="menu-main-menu"] {
 	--nv-hover-bg:      #09332E;  /* tab fill on hover            */
 	--nv-hover-text:    #FFFFFF;  /* label colour on hover        */
 	--nv-current-bg:    #CFD200;  /* tab fill for the page you are on */
 	--nv-current-text:  #09332E;  /* label colour for that tab    */
 
-	--nv-radius:        12px;     /* roundness of the tab top corners */
-	--nv-flare:         16px;     /* size of the little "folder feet"  */
-	--nv-pad-x:         20px;     /* how far the tab reaches past the label */
+	--nv-radius:        9px;      /* roundness of the tab top corners */
+	--nv-flare:         0px;      /* outward "feet" at the foot of the tab.
+	                                 0 = straight sides, like a manila folder.
+	                                 Try 12-16px if you ever want the flared look. */
+	--nv-pad-x:         14px;     /* how far the tab reaches past the label */
+	--nv-inset-top:     16px;     /* white space left above the tab */
 	--nv-drop:          12px;     /* how far the tab sinks below the menu row */
 	--nv-speed:         260ms;    /* fade speed                    */
+	--nv-lift:          none;     /* set to e.g. drop-shadow(0 -2px 5px rgba(9,51,46,.2))
+	                                 if you ever want the tab to cast a shadow */
 }
 
 /* ---- 2. Make the menu item as tall as the bar -----------------------
@@ -136,7 +144,7 @@ nav.awb-menu[aria-label="Main Menu"]:not(.collapse-enabled) {
 .awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li > .awb-menu__main-background-active {
 	--nv-bg: var(--nv-hover-bg);
 
-	top: 0;
+	top: var(--nv-inset-top);
 	bottom: calc(-1 * var(--nv-drop));
 	left: calc(-1 * var(--nv-pad-x));
 	right: calc(-1 * var(--nv-pad-x));
@@ -147,8 +155,7 @@ nav.awb-menu[aria-label="Main Menu"]:not(.collapse-enabled) {
 	border-radius: var(--nv-radius) var(--nv-radius) 0 0;
 	background-color: var(--nv-bg);
 
-	/* the lift that makes the folder look pulled forward */
-	filter: drop-shadow(0 -2px 5px rgba(9, 51, 46, 0.20));
+	filter: var(--nv-lift);
 
 	transition: opacity var(--nv-speed) cubic-bezier(.42, .01, .58, 1),
 	            background-color var(--nv-speed) cubic-bezier(.42, .01, .58, 1);
@@ -273,47 +280,58 @@ nav.awb-menu[aria-label="Main Menu"]:not(.collapse-enabled) {
 
 <div class="hero">
   <h1>Hover the menu above.</h1>
-  <p>The tab is pure CSS. Nothing on the page moves &mdash; the labels stay on exactly the same pixel,
-     hovered or not. The green tab on <b>Contact</b> is the &ldquo;you are here&rdquo; state: it stays raised
-     after you click through to a page, and it also lights up when you are on any page inside a dropdown.</p>
+  <p>Straight sides, rounded top, sitting flush on the bottom edge of the white bar &mdash; the same
+     manila-folder profile as the screenshot you sent, and narrower than the first version.
+     Nothing on the page moves when you hover. The tab on <b>Contact</b> is the
+     &ldquo;you are here&rdquo; state: it stays raised after you click through, and it also lights up
+     when you are on any page inside a dropdown.</p>
 </div>
 
 <div class="panel">
-  <h2>Colour options &mdash; pick one and I'll lock it in</h2>
+  <div class="flag"><b>One thing worth a look.</b> You asked for option A &mdash; dark green tab,
+    <b>white</b> label &mdash; and that is what is loaded by default. But the screenshot you attached
+    actually shows the label in <b>bright green</b>, not white. Press the second button below to see
+    your screenshot's version. Either one is a one-line change; just tell me which you want.</div>
+
+  <h2>Label colour on the hovered tab</h2>
   <div class="row">
-    <button class="btn" data-v="a" aria-pressed="true">A &middot; hover dark green, white label</button>
-    <button class="btn" data-v="b" aria-pressed="false">B &middot; hover dark green, bright green label</button>
-    <button class="btn" data-v="c" aria-pressed="false">C &middot; hover bright green, active dark green</button>
+    <button class="btn" data-v="a" aria-pressed="true">A &middot; white label (what you asked for)</button>
+    <button class="btn" data-v="ref" aria-pressed="false">Bright green label (what your screenshot shows)</button>
+    <button class="btn" data-v="c" aria-pressed="false">Flipped &middot; bright green tab, dark label</button>
   </div>
+
   <h2>Shape</h2>
   <div class="row">
-    <button class="btn" data-s="soft" aria-pressed="true">Soft corners</button>
-    <button class="btn" data-s="sharp" aria-pressed="false">Sharper, more "manila folder"</button>
-    <button class="btn" data-s="wide" aria-pressed="false">Wider tab</button>
+    <button class="btn" data-s="manila" aria-pressed="true">Manila folder (matches your screenshot)</button>
+    <button class="btn" data-s="rounder" aria-pressed="false">Softer corners</button>
+    <button class="btn" data-s="flared" aria-pressed="false">Flared feet (the first version)</button>
   </div>
+
+  <h2>Context</h2>
   <div class="row">
     <button class="btn" data-page="dark" aria-pressed="true">Dark hero (home)</button>
     <button class="btn" data-page="light" aria-pressed="false">Light hero (inner page)</button>
     <button class="btn" data-off aria-pressed="false">Turn the effect off (before/after)</button>
   </div>
+
   <p class="note">This page is a stand-alone copy of your header so you can play with it safely.
-    I have already tested the exact same CSS against the real
-    <b>nuventive3dev.wpenginepowered.com</b> pages &mdash; home, Contact, and a page nested inside the
-    Solutions dropdown &mdash; in desktop, sticky-header and mobile widths.</p>
+    The exact same CSS has been tested against the real <b>nuventive3dev.wpenginepowered.com</b>
+    pages &mdash; home, Contact, and a page nested inside the Solutions dropdown &mdash; at desktop
+    width, with the sticky shrunk header after scrolling, and at mobile width.</p>
 </div>
 
 <script>
 var V={
  a:'ul[id^="menu-main-menu"]{--nv-hover-bg:#09332E;--nv-hover-text:#FFFFFF;--nv-current-bg:#CFD200;--nv-current-text:#09332E;}',
- b:'ul[id^="menu-main-menu"]{--nv-hover-bg:#09332E;--nv-hover-text:#CFD200;--nv-current-bg:#CFD200;--nv-current-text:#09332E;}',
+ ref:'ul[id^="menu-main-menu"]{--nv-hover-bg:#09332E;--nv-hover-text:#CFD200;--nv-current-bg:#CFD200;--nv-current-text:#09332E;}',
  c:'ul[id^="menu-main-menu"]{--nv-hover-bg:#CFD200;--nv-hover-text:#09332E;--nv-current-bg:#09332E;--nv-current-text:#FFFFFF;}'
 };
 var S={
- soft:'ul[id^="menu-main-menu"]{--nv-radius:12px;--nv-flare:16px;--nv-pad-x:20px;}',
- sharp:'ul[id^="menu-main-menu"]{--nv-radius:6px;--nv-flare:10px;--nv-pad-x:20px;}',
- wide:'ul[id^="menu-main-menu"]{--nv-radius:14px;--nv-flare:18px;--nv-pad-x:32px;}'
+ manila:'ul[id^="menu-main-menu"]{--nv-radius:9px;--nv-flare:0px;--nv-pad-x:14px;--nv-inset-top:16px;--nv-lift:none;}',
+ rounder:'ul[id^="menu-main-menu"]{--nv-radius:16px;--nv-flare:0px;--nv-pad-x:18px;--nv-inset-top:12px;--nv-lift:none;}',
+ flared:'ul[id^="menu-main-menu"]{--nv-radius:12px;--nv-flare:16px;--nv-pad-x:20px;--nv-inset-top:0px;--nv-lift:drop-shadow(0 -2px 5px rgba(9,51,46,.2));}'
 };
-var cur={v:'a',s:'soft'};
+var cur={v:'a',s:'manila'};
 function apply(){document.getElementById('variant').textContent=V[cur.v]+S[cur.s];}
 function press(sel,el){document.querySelectorAll(sel).forEach(function(b){b.setAttribute('aria-pressed',b===el?'true':'false');});}
 document.querySelectorAll('[data-v]').forEach(function(b){b.onclick=function(){cur.v=b.dataset.v;press('[data-v]',b);apply();};});
