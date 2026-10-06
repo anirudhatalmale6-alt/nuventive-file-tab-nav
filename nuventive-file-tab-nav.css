@@ -184,6 +184,34 @@ nav.awb-menu[aria-label="Main Menu"]:not(.collapse-enabled) {
 	color: var(--nv-hover-text) !important;
 }
 
+/* ---- 5b. Narrow desktop widths --------------------------------------
+   Between the 1200px mobile breakpoint and about 1340px the seven menu items
+   are packed tight, so the tab needs less shoulder or it crowds its
+   neighbours. Nothing here changes the menu itself - only the tab. */
+@media (max-width: 1339px) {
+	.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li > .awb-menu__main-background-active {
+		--nv-pad-x: 9px;
+	}
+}
+
+/* Below 1255px the menu no longer fits on one line and Avada wraps it onto
+   two rows. (That wrap is the menu's own behaviour - it happens today, with
+   or without this file.) A folder tab only makes sense on a single row
+   sitting on the bottom edge of the bar, so on two rows it becomes a plain
+   rounded highlight instead: same colours, same hover and active behaviour,
+   no tab foot hanging into the row underneath.
+
+   If you ever add or remove a top-level menu item, this 1254px number is the
+   one to re-check - it is the width at which your menu stops fitting on one
+   line. */
+@media (max-width: 1254px) {
+	.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li > .awb-menu__main-background-active {
+		--nv-inset-top: 3px;
+		--nv-drop: 0px;
+		border-radius: var(--nv-radius);
+	}
+}
+
 /* ---- 6. Respect "reduce motion" ------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
 	.awb-menu ul[id^="menu-main-menu"] > li.awb-menu__main-li > .awb-menu__main-background-active {
