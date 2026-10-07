@@ -112,14 +112,12 @@ Measured on the live Contact page, hovering *Upcoming Events*:
 
 ---
 
-# Current-page-only mode (section 8)
+# Optional — tab only on the page you are on
 
-Section 8 at the bottom of the file turns the tab into a **"you are here"**
-marker only: moving the mouse across the menu does nothing, and the tab shows
-only on the page you are actually on.
-
-Delete that whole block to go back to the tab following the mouse. Nothing
-above it needs touching.
+`nuventive-file-tab-nav.css` keeps the tab following the mouse, the way it has
+behaved all along. If you want the tab to appear **only** on the page you are
+actually on, paste `optional-current-page-only.css` after it. Leave that file
+out and nothing changes.
 
 Two things to be aware of in this mode:
 
