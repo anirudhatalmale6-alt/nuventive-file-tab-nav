@@ -127,8 +127,8 @@ Two things to be aware of in this mode:
    `/` (nothing lit), `/contact/` (Contact lit) and
    `/solutions/program-review/` (Solutions lit, via the dropdown ancestor).
 2. **There is no mouse feedback on the menu at all.** If that feels too dead,
-   uncomment the optional rule at the very bottom of section 8 - it tints the
-   label on hover without drawing a tab.
+   uncomment the optional rule at the bottom of `optional-current-page-only.css`
+   - it tints the label on hover without drawing a tab.
 
 ---
 
@@ -150,8 +150,8 @@ The important one is its last rule:
 
 That says *"while any item is hovered, hide the highlight on all the others"* -
 which cancels current-page-only mode outright: the tab would vanish the moment
-the mouse touched the menu. Section 8 out-specifies it, so this file behaves
-correctly either way, but **the clean fix is to delete that child-theme block**
+the mouse touched the menu. `optional-current-page-only.css` out-specifies it, so
+it behaves correctly either way, but **the clean fix is to delete that child-theme block**
 so only one implementation is live. Two sets of rules fighting over the same
 element will cause confusing results the next time either is changed.
 
