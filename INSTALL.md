@@ -47,8 +47,8 @@ need to touch the rules underneath.
 --nv-flare:         0px;      /* 0 = straight sides (manila folder). 12-16px = flared feet */
 --nv-pad-x:         14px;     /* how far the tab reaches past the label */
 --nv-inset-top:     16px;     /* white space left above the tab */
---nv-drop:          0px;      /* how far the tab sinks BELOW the menu row - keep at 0
-                                 unless your header gains padding under the menu */
+--nv-drop:          6px;      /* bottom of the menu row -> bottom of the header.
+                                 6px on nuventive.com, 0 on the staging site */
 --nv-speed:         260ms;    /* fade speed */
 --nv-lift:          none;     /* drop-shadow(...) if you want the tab to cast a shadow */
 ```
@@ -154,6 +154,30 @@ the mouse touched the menu. `optional-current-page-only.css` out-specifies it, s
 it behaves correctly either way, but **the clean fix is to delete that child-theme block**
 so only one implementation is live. Two sets of rules fighting over the same
 element will cause confusing results the next time either is changed.
+
+---
+
+# Why --nv-drop is 6px on nuventive.com but was 0 on staging
+
+The two sites do not have the same header. On **nuventive.com** there is an extra
+row inside the header underneath the menu (`fusion-builder-row-3`, 6px tall,
+5px of padding, no visible content). So:
+
+* bottom of the menu's own row = 118
+* bottom of `.fusion-tb-header` = 124
+
+The tab is positioned from the menu row, so it needs 6px to reach the real
+bottom edge of the header. On staging that extra row is hidden on desktop and
+the two edges are the same, hence 0.
+
+**Derive it, never guess it:** bottom of `.fusion-tb-header` minus bottom of the
+menu's own `.fusion-fullwidth` row. Too small and a pale sliver shows under the
+tab; too big and the tab hangs over the page.
+
+If you would rather not carry the offset at all, removing the 5px padding from
+that empty row makes both edges line up and `--nv-drop` goes back to 0 - but
+that nudges everything below the header up by 6px on every page, so it is your
+call.
 
 ---
 

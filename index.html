@@ -95,11 +95,21 @@ ul[id^="menu-main-menu"] {
 	                                 Try 12-16px if you ever want the flared look. */
 	--nv-pad-x:         14px;     /* how far the tab reaches past the label */
 	--nv-inset-top:     16px;     /* white space left above the tab */
-	--nv-drop:          0px;      /* how far the tab sinks BELOW the menu row.
-	                                 Your header band has no padding under the
-	                                 menu, so the row's bottom edge IS the bottom
-	                                 of the white bar - anything above 0 here
-	                                 hangs over the page content underneath. */
+	--nv-drop:          6px;      /* distance from the bottom of the menu row to
+	                                 the bottom of the header.
+
+	                                 On nuventive.com there is an empty 6px row
+	                                 sitting under the menu (fusion-builder-row-3,
+	                                 5px padding), so the header ends 6px below the
+	                                 menu row. Without this the tab's foot stops
+	                                 short and you see a pale sliver between it and
+	                                 the green section.
+
+	                                 HOW TO RE-DERIVE IT if the header changes:
+	                                 bottom of .fusion-tb-header minus bottom of the
+	                                 menu's own row. It was 0 on the staging site.
+	                                 Never guess it - too big and the tab hangs over
+	                                 the page, too small and the sliver comes back. */
 	--nv-speed:         260ms;    /* fade speed                    */
 	--nv-lift:          none;     /* set to e.g. drop-shadow(0 -2px 5px rgba(9,51,46,.2))
 	                                 if you ever want the tab to cast a shadow */
@@ -193,6 +203,28 @@ nav.awb-menu[aria-label="Main Menu"]:not(.collapse-enabled) {
 	background: radial-gradient(circle at top right,
 	            rgba(0, 0, 0, 0) var(--nv-flare),
 	            var(--nv-bg) calc(var(--nv-flare) + 0.5px));
+}
+
+/* ---- 3b. Optical centring of the label -------------------------------
+   The tab is positioned on the menu ITEM, and on items with a dropdown the
+   item includes the little arrow. The arrow is visually much lighter than
+   the text, so centring on item = text looking pushed to the left.
+
+   Measured on nuventive.com before this block: the word sat 10px left of the
+   tab's centre on every item with an arrow, and dead centre on the two
+   without one (Upcoming Events, Contact) - so the tabs did not match each
+   other. Your own design reference sits at about 5px.
+
+   This tightens the gap before the arrow and nudges the tab 3px left, which
+   brings it to 5px - matching the reference, and consistent across every item.
+   Delete this block to go back to centring on the whole item. */
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.awb-menu__main-li > .awb-menu__main-a .awb-menu__open-nav-submenu-hover {
+	padding-left: 4px !important;
+}
+
+.awb-menu:not(.collapse-enabled) ul[id^="menu-main-menu"] > li.menu-item-has-children > .awb-menu__main-background-active {
+	left: calc(-1 * var(--nv-pad-x) - 3px);
+	right: calc(-1 * var(--nv-pad-x) + 3px);
 }
 
 /* Hovered folder sits in front of its neighbours */
